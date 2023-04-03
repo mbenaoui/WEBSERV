@@ -40,7 +40,6 @@ int Prasing_Request::check_first_line(std::string first_line)
         char *str = strtok(NULL, "?");
         if (str)
             this->budy_url = str;
-        // free(str);
     }
     all_url.clear();
     return (1);
@@ -175,8 +174,14 @@ Prasing_Request::Prasing_Request(std::string hedr)
             body = ft_chanked(body);
         std ::string finish_body = hdr + body;
         prasing_body(finish_body);
-        std ::cout << "la9l....\n";
+        finish_body.clear();
     }
+    hdr.clear();
+    first.clear();
+    body.clear();
+    //  system("leaks webserv");
+
+   
 }
 void Prasing_Request ::prasing_body(std ::string body1)
 {

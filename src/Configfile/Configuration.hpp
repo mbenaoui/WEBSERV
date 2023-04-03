@@ -46,6 +46,10 @@ public:
     std::string gethost();
     std::string getroot();
     std::string getindex();
+    std::map<int , std::string> geterror()
+    {
+        return this->error;
+    }
     std::vector<std::string> getcgi();
     std::vector<std::string> getserver_names();
 };

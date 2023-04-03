@@ -34,6 +34,7 @@ private:
     std::vector<Client *> _clients;
 
 public:
+    int g;
     std::map<int, Client *> moch;
     std::vector<pollfd> &get_Pollfd();
     std::vector<Configuration> &get_Confgs();

@@ -201,6 +201,7 @@ int Webserv::ft_recv(pollfd &tmp_fd, int j)
     }
     return 0;
 }
+
 int Webserv::ft_send(pollfd &tmp_fd, int i, int j)
 {
     // std::cout<<_clients[j]->getMessage();
@@ -211,7 +212,9 @@ int Webserv::ft_send(pollfd &tmp_fd, int i, int j)
     {
         close(tmp_fd.fd);
         _pollfd.erase(_pollfd.begin() + i);
+        delete _clients[j];
         _clients.erase(_clients.begin() + j);
+       
     }
     return 0;
 }

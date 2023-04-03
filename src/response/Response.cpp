@@ -64,10 +64,19 @@ std::pair<Location, std::string> find_location(std::string url, Configuration co
     return std::pair<Location, std::string>(Location(), std::string());
 }
 
-std ::string status_delete(int status, std ::string str)
+std ::string status_delete(int status, std ::string str, std ::map<int, std::string> mymap_erorr)
 {
     std ::string bady;
-    std ::string url3 = "error/" + int_to_string(status) + ".html";
+    std ::string url3;// = "error/" + int_to_string(status) + ".html";
+    int h;
+    if ((h = open(mymap_erorr[status].c_str(), O_RDWR)) != -1)
+    {
+        url3 = mymap_erorr[status];
+        close(h);
+    }
+    else
+        url3 = "src/error/" + int_to_string(status) + ".html";
+
     int d = open(url3.c_str(), O_RDWR);
     if (d == -1)
         return (NULL);
@@ -149,6 +158,8 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
 
     status = rq.get_status();
     mymap = rq.get_mymap();
+    mymap_erorr = conf_serv.geterror();
+    std ::cout << mymap_erorr[404] << ":::::::::::" << std::endl;
     std ::string url = rq.get_url();
     std ::string method = rq.get_method();
     std ::string root;
@@ -158,9 +169,9 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
     for (int i = 0; i < location_and_url.first.getallow_methods().size(); i++)
         if (method == location_and_url.first.getallow_methods()[i])
             found_method = 1;
-    if(found_method == 0)
+    if (found_method == 0)
         status = 405;
-        std:: cout << status << "\nhna haa 1\n";
+    std::cout << status << "\nhna haa 1\n";
     if (!location_and_url.first.getroot().empty())
         root = location_and_url.first.getroot() + url;
     else
@@ -251,12 +262,31 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                     autoindex = "on";
                 else
                 {
-                    if ( dir != NULL || fd == 0 || (!access(url2.c_str(), F_OK) && access(url2.c_str(), R_OK)))
+                    std ::string url3; //= "error/" + int_to_string(status) + ".html";
+                    int h;
+                    if (dir != NULL || fd == 0 || (!access(url2.c_str(), F_OK) && access(url2.c_str(), R_OK)))
+                    {
                         status = 403;
+                        if ((h = open(mymap_erorr[403].c_str(), O_RDWR)) != -1)
+                        {
+                            url3 = mymap_erorr[403];
+                            close(h);
+                        }
+                        else
+                            url3 = "src/error/403.html";
+                    }
                     else
+                    {
                         status = 404;
+                        if ((h = open(mymap_erorr[404].c_str(), O_RDWR)) != -1)
+                        {
+                            url3 = mymap_erorr[404];
+                            close(h);
+                        }
+                        else
+                            url3 = "src/error/404.html";
+                    }
                     std ::string bady;
-                    std ::string url3 = "error/" + int_to_string(status) + ".html";
                     int i = open(url3.c_str(), O_RDWR);
                     if (i == -1)
                         return;
@@ -345,12 +375,30 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                 }
                 else
                 {
-                    if ((!access(root.c_str(), F_OK) && access(root.c_str(), R_OK)))
+                    int h;
+                    std ::string url3;
+                    if (dir != NULL || (!access(root.c_str(), F_OK) && access(root.c_str(), R_OK)))
+                    {
                         status = 403;
+                        if ((h = open(mymap_erorr[403].c_str(), O_RDWR)) != -1)
+                        {
+                            url3 = mymap_erorr[403];
+                            close(h);
+                        }
+                        else
+                            url3 = "src/error/403.html";
+                    }
                     else
+                    {
                         status = 404;
-                    std ::string bady;
-                    std ::string url3 = "error/" + int_to_string(status) + ".html";
+                        if ((h = open(mymap_erorr[404].c_str(), O_RDWR)) != -1)
+                        {
+                            url3 = mymap_erorr[404];
+                            close(h);
+                        }
+                        else
+                            url3 = "src/error/404.html";
+                    }
                     int d = open(url3.c_str(), O_RDWR);
                     if (d == -1)
                         return;
@@ -381,12 +429,12 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
         else
         {
             std ::string del = chec_url(url);
-            std :: cout << "||||||||||||||||||||\n";
+            std ::cout << "||||||||||||||||||||\n";
 
             if (del != "/upload")
             {
                 status = 409;
-                respons = status_delete(status, "Conflict");
+                respons = status_delete(status, "Conflict", mymap_erorr);
                 return;
             }
 
@@ -398,13 +446,13 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                 if (remove(root.c_str()) == 0)
                 {
                     status = 202;
-                    respons = status_delete(status, "Accepted");
+                    respons = status_delete(status, "Accepted", mymap_erorr);
                     return;
                 }
                 else
                 {
                     status = 204;
-                    respons = status_delete(status, "No Content");
+                    respons = status_delete(status, "No Content", mymap_erorr);
                     return;
                 }
             }
@@ -412,7 +460,7 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
             else if (dir != NULL)
             {
                 status = 401;
-                respons = status_delete(status, "Unauthorized");
+                respons = status_delete(status, "Unauthorized", mymap_erorr);
                 return;
             }
         }
@@ -420,7 +468,15 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
     else
     {
         std ::string bady;
-        std ::string url3 = "error/" + int_to_string(status) + ".html";
+        int h;
+        std ::string url3; //= "error/" + int_to_string(status) + ".html";
+        if ((h = open(mymap_erorr[status].c_str(), O_RDWR)) != -1)
+        {
+            url3 = mymap_erorr[status];
+            close(h);
+        }
+        else
+            url3 = "src/error/" + int_to_string(status) + ".html";
         int d = open(url3.c_str(), O_RDWR);
         if (d == -1)
             return;
@@ -448,7 +504,6 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
         close(d);
         return;
     }
-
 }
 
 std ::string Response::get_respons()
