@@ -1,3 +1,6 @@
+
+ 
+
 #include "Configuration.hpp"
 std::vector<std::string> search_in_location_vector(std::vector<std::pair<std::string, std::vector<std::string> > > &location, std::string varaible)
 {

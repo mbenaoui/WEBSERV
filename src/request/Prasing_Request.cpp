@@ -1,4 +1,3 @@
-
 #include "Prasing_Request.hpp"
 
 #include <bits/stdc++.h>
@@ -221,7 +220,6 @@ void Prasing_Request ::prasing_body(std ::string body1, std::string body2)
 
     if (body2.size() > 4)
     {
-        std :: cout << "********************************"<< std::endl;
 
         while (rq <= i)
         {
@@ -250,7 +248,7 @@ void Prasing_Request ::prasing_body(std ::string body1, std::string body2)
             }
             rq++;
         }
-    } // std ::cout << "::::::::::::::" << std ::endl;
+    }
 }
 std ::string Prasing_Request::get_url()
 {

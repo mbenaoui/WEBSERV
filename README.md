@@ -88,4 +88,3 @@ run cgi in my laptop : https://techexpert.tips/nginx/python-cgi-nginx/
 [Core Content Server Variables and Functions](https://docs.oracle.com/cd/E21043_01/doc.1111/e10726/toc.htm)
 
 git add . ; git commit -m "http server" ; git push origin master 
-# WEBSERV

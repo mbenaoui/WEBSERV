@@ -155,7 +155,7 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
     // {
     //     std::cerr << var << '\n';
     // }
-
+// std::cout<<"------------------1999\n";
     status = rq.get_status();
     mymap = rq.get_mymap();
     mymap_erorr = conf_serv.geterror();
