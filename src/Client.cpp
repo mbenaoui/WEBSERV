@@ -57,7 +57,6 @@ void Client::setMessage(std::string value, int size)
 {
     if (size < 0)
         return;
-    std::cout << size << "|" << value.length() << "|" << size << std::endl;
     _message = value.substr(size, value.length() - size);
 }
 

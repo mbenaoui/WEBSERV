@@ -67,7 +67,7 @@ std::pair<Location, std::string> find_location(std::string url, Configuration co
 std ::string status_delete(int status, std ::string str, std ::map<int, std::string> mymap_erorr)
 {
     std ::string bady;
-    std ::string url3;// = "error/" + int_to_string(status) + ".html";
+    std ::string url3; // = "error/" + int_to_string(status) + ".html";
     int h;
     if ((h = open(mymap_erorr[status].c_str(), O_RDWR)) != -1)
     {
@@ -159,19 +159,18 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
     status = rq.get_status();
     mymap = rq.get_mymap();
     mymap_erorr = conf_serv.geterror();
-    std ::cout << mymap_erorr[404] << ":::::::::::" << std::endl;
     std ::string url = rq.get_url();
     std ::string method = rq.get_method();
     std ::string root;
     std ::string url2;
     int j;
     int found_method = 0;
+
     for (int i = 0; i < location_and_url.first.getallow_methods().size(); i++)
         if (method == location_and_url.first.getallow_methods()[i])
             found_method = 1;
     if (found_method == 0)
         status = 405;
-    std::cout << status << "\nhna haa 1\n";
     if (!location_and_url.first.getroot().empty())
         root = location_and_url.first.getroot() + url;
     else
@@ -429,7 +428,6 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
         else
         {
             std ::string del = chec_url(url);
-            std ::cout << "||||||||||||||||||||\n";
 
             if (del != "/upload")
             {

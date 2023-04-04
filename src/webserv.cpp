@@ -95,7 +95,7 @@ int Webserv::init_server()
     i = 0;
     while (i < _confgs.size())
     {
-        std::cout << _confgs[i].getlisten() << std::endl;
+        // std::cout << _confgs[i].getlisten() << std::endl;
         struct sockaddr_in serv_addr;
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1)
@@ -177,6 +177,7 @@ int Webserv::ft_recv(pollfd &tmp_fd, int j)
         // std::cout << "\n||||||||||||||" << std::endl;
     int n = read(tmp_fd.fd, buf2, BUFFERSIZE);
 
+    // std::cout <<n<<"|**************|\n\n"<<std::endl;
     // std::cout<<buf2;
     // std::cout<<"rr = "<<r<< "mmm ="<<m<<std::endl;
     if (n == 0)

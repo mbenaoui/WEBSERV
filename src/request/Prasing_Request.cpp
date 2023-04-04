@@ -158,6 +158,7 @@ Prasing_Request::Prasing_Request(std::string hedr)
     first = hedr.substr(0, i);
     hdr = hedr.substr(0, hedr.find("\r\n\r\n"));
     body = hedr.substr(hedr.find("\r\n\r\n"));
+    // std :: cout <<"______________________"<< hedr <<"____________________"<< std::endl;
     std ::string chunked;
     if (!check_first_line(first))
         return;
@@ -167,23 +168,21 @@ Prasing_Request::Prasing_Request(std::string hedr)
     if (this->status != 200)
         return;
     // std :: cout << body << std :: endl;
-    // std :: cout << "::::::::::::::" << std :: endl;
     if (get_method() == "POST")
     {
         if (mymap["Transfer-Encoding"] == " chunked")
             body = ft_chanked(body);
         std ::string finish_body = hdr + body;
-        prasing_body(finish_body);
+
+        prasing_body(finish_body, body);
         finish_body.clear();
     }
     hdr.clear();
     first.clear();
     body.clear();
     //  system("leaks webserv");
-
-   
 }
-void Prasing_Request ::prasing_body(std ::string body1)
+void Prasing_Request ::prasing_body(std ::string body1, std::string body2)
 {
     std::string nb;
     std::string body;
@@ -199,46 +198,59 @@ void Prasing_Request ::prasing_body(std ::string body1)
         for (; body1[index] != '\r'; index++)
             nb.push_back(body1[index]);
     }
+
     int index2 = 0;
     int fin = 0;
     int rq = 0;
-
     for (; index2 != -1; i++)
     {
-        index2 = body1.find(nb, fin);
-        fin = body1.find(nb, index2 + 1);
-        one_body.push_back(body1.substr(index2, fin - index2));
-        if (body1[fin + nb.size() + 1] == '-' && body1[fin + nb.size()] == '-')
+
+        index2 = body2.find(nb, fin);
+        fin = body2.find(nb, index2 + 1);
+        std ::cout << i << " " << index2 << " " << fin << std ::endl;
+        if (index != std ::string::npos && fin != std::string::npos)
+        {
+            one_body.push_back(body2.substr(index2, fin - index2));
+        }
+        if (body2[fin + nb.size() + 1] == '-' && body2[fin + nb.size()] == '-')
             break;
     }
 
-    while (rq <= i)
+    // std ::cout << one_body[rq] << std ::endl;
+    // std ::cout <<"||||||||||||||"<< body2 << "||||||||||||" << std::endl;
+
+    if (body2.size() > 4)
     {
-        if (one_body[rq].find("filename=") != std::string::npos)
+        std :: cout << "********************************"<< std::endl;
+
+        while (rq <= i)
         {
-            std::string fil = "filename=";
-            int first = one_body[rq].find(fil) + fil.length() + 1;
-            int finish = one_body[rq].find("\"", first);
-            std::string filename;
-            for (int j = first; j < finish; j++)
-                filename += one_body[rq][j];
-            if (filename.empty())
+            if ((one_body[rq].find("filename=") != std::string::npos))
             {
-                rq++;
-                continue;
+                std::string fil = "filename=";
+                int first = one_body[rq].find(fil) + fil.length() + 1;
+                int finish = one_body[rq].find("\"", first);
+                std::string filename;
+                for (int j = first; j < finish; j++)
+                    filename += one_body[rq][j];
+                if (filename.empty())
+                {
+                    rq++;
+                    continue;
+                }
+                std ::string str = one_body[rq].substr(one_body[rq].find("\r\n\r\n") + 4);
+                std ::string filee = "www/upload/" + filename;
+                if (!filename.empty())
+                {
+                    std ::ofstream MyFile(filee);
+                    // std::cout << "hna hna\n";
+                    MyFile << str;
+                    MyFile.close();
+                }
             }
-            std ::string str = one_body[rq].substr(one_body[rq].find("\r\n\r\n") + 4);
-            std ::string filee = "www/upload/" + filename;
-            if (!filename.empty())
-            {
-                std ::ofstream MyFile(filee);
-                // std::cout << "hna hna\n";
-                MyFile << str;
-                MyFile.close();
-            }
+            rq++;
         }
-        rq++;
-    }
+    } // std ::cout << "::::::::::::::" << std ::endl;
 }
 std ::string Prasing_Request::get_url()
 {
