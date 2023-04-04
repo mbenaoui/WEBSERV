@@ -43,7 +43,7 @@ public:
     int init_server();
     int run_server();
     int ft_accept(pollfd &tmp_fd);
-    int ft_recv(pollfd &tmp_fd, int j);
+    int ft_recv(pollfd &tmp_fd,int i,int j);
     int ft_send(pollfd &tmp_fd, int i, int j);
     int server_matching(int j);
     static int server_run()

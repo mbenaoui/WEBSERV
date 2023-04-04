@@ -79,6 +79,12 @@ int parsingLocation(std::map<std::string, std::vector<std::string> >::iterator i
     {
         if (searchStr(it3) == false)
             error_conf(101);
+    }
+    else if (!it3->first.compare("return"))
+    {
+        int ind = atoi(it3->second[0].c_str());
+        if (ind < 0 || ind > 999)
+            error_conf (103);
     }       
     else if(!it3->first.compare("limit_client_body_size"))
     {
@@ -117,6 +123,7 @@ void error_conf(int status)
     std::cout<<""<<std::endl;
     std::cout<<"    location /upload{"<<std::endl;
     std::cout<<"      index index.html;"<<std::endl;
+    std::cout<<"      return  301 /upload;"<<std::endl;
     std::cout<<"    }"<<std::endl;
     std::cout<<""<<std::endl;
     std::cout<<"    location /cgi-bin {"<<std::endl;

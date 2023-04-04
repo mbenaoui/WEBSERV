@@ -339,7 +339,8 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                             name1 = name;
                         else
                             name1 = url + "/" + name;
-                        msg += "\n<li><a href=\"" + name1 + "\">" + name + "</a></li>\n";
+                        if(name != ".")
+                            msg += "\n<li><a href=\"" + name1 + "\">" + name + "</a></li>\n";
                     }
                     msg += "</ol>\n\
                            </html>";

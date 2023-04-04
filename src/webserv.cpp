@@ -187,7 +187,7 @@ int Webserv::server_matching(int j)
     // if(flag);
     return 0;
 }
-int Webserv::ft_recv(pollfd &tmp_fd, int j)
+int Webserv::ft_recv(pollfd &tmp_fd,int i, int j)
 {
     char buf2[BUFFERSIZE];
     bzero(buf2, BUFFERSIZE);
@@ -198,8 +198,10 @@ int Webserv::ft_recv(pollfd &tmp_fd, int j)
     if (n == 0)
     {
         printf("client %d closed connection\n", tmp_fd.fd);
-        close(tmp_fd.fd);
-        tmp_fd.fd = -1;
+       close(tmp_fd.fd);
+        delete _clients[j];
+        _pollfd.erase(_pollfd.begin() + i);
+        _clients.erase(_clients.begin() + j);
         return 1;
     }
     // std::string a = std::string(buf2);
@@ -228,6 +230,7 @@ int Webserv::ft_send(pollfd &tmp_fd, int i, int j)
     if (_clients[j]->getMessage().empty())
     {
         close(tmp_fd.fd);
+        delete _clients[j];
         _pollfd.erase(_pollfd.begin() + i);
         _clients.erase(_clients.begin() + j);
     }
@@ -256,7 +259,7 @@ int Webserv::run_server()
                 for (int j = 0; j < _clients.size(); j++)
                 {
                     if (_clients[j]->plfd.fd == _pollfd[i].fd)
-                        ft_recv(_pollfd[i], j);
+                        ft_recv(_pollfd[i],i, j);
                 }
             }
             if ((_pollfd[i].revents & POLLOUT))
