@@ -75,7 +75,7 @@ void Prasing_Request::prasing_headr(std ::string headrs)
     for (int i = 0; i < res.size(); i++)
     {
         std ::string key = res[i].substr(0, res[i].find(":"));
-        std ::string value = res[i].substr(res[i].find(" "));
+        std ::string value = res[i].substr(res[i].find(" ") + 1);
         mymap.insert(std ::pair<std ::string, std::string>(key, value));
     }
     // std :: cout << mymap["Host"] << std::endl;
@@ -87,7 +87,7 @@ void Prasing_Request::prasing_headr(std ::string headrs)
             status = 400;
             return;
         }
-        if (mymap["Transfer-Encoding"] != " chunked")
+        if (mymap["Transfer-Encoding"] != "chunked")
         {
             if (this->methode == "POST" && (mymap["Content-Length"].empty() || atoi(mymap["Content-Length"].c_str()) < 0))
             {
@@ -157,7 +157,6 @@ Prasing_Request::Prasing_Request(std::string hedr)
     first = hedr.substr(0, i);
     hdr = hedr.substr(0, hedr.find("\r\n\r\n"));
     body = hedr.substr(hedr.find("\r\n\r\n"));
-    // std :: cout <<"______________________"<< hedr <<"____________________"<< std::endl;
     std ::string chunked;
     if (!check_first_line(first))
         return;
@@ -169,13 +168,18 @@ Prasing_Request::Prasing_Request(std::string hedr)
     // std :: cout << body << std :: endl;
     if (get_method() == "POST")
     {
-        if (mymap["Transfer-Encoding"] == " chunked")
-            body = ft_chanked(body);
-        std ::string finish_body = hdr + body;
+        if (body.size() > 4)
+        {
 
-        prasing_body(finish_body, body);
-        finish_body.clear();
+            if (mymap["Transfer-Encoding"] == "chunked")
+                body = ft_chanked(body);
+            std ::string finish_body = hdr + body;
+
+            prasing_body(finish_body, body);
+            finish_body.clear();
+        }
     }
+    std ::cout << "______________________" << first << "____________________" << std::endl;
     hdr.clear();
     first.clear();
     body.clear();
@@ -207,16 +211,15 @@ void Prasing_Request ::prasing_body(std ::string body1, std::string body2)
         index2 = body2.find(nb, fin);
         fin = body2.find(nb, index2 + 1);
         std ::cout << i << " " << index2 << " " << fin << std ::endl;
-        if (index != std ::string::npos && fin != std::string::npos)
+        if (index2 == -1 || fin == -1)
+            return;
+        if (index != -1 && fin != -1)
         {
             one_body.push_back(body2.substr(index2, fin - index2));
+            if (body2[fin + nb.size() + 1] == '-' && body2[fin + nb.size()] == '-')
+                break;
         }
-        if (body2[fin + nb.size() + 1] == '-' && body2[fin + nb.size()] == '-')
-            break;
     }
-
-    // std ::cout << one_body[rq] << std ::endl;
-    // std ::cout <<"||||||||||||||"<< body2 << "||||||||||||" << std::endl;
 
     if (body2.size() > 4)
     {

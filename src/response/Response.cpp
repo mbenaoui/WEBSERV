@@ -155,7 +155,6 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
     // {
     //     std::cerr << var << '\n';
     // }
-// std::cout<<"------------------1999\n";
     status = rq.get_status();
     mymap = rq.get_mymap();
     mymap_erorr = conf_serv.geterror();
@@ -217,16 +216,22 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                 dir = opendir(url2.c_str());
 
             std::string url1;
-            if (!location_and_url.first.getreturn().empty())
-            {
-                std ::string bady;
-                bady = "HTTP/1.1 301 Moved Permanently";
-                bady.append("\nLocation: ");
-                bady.append(location_and_url.first.getreturn()[1]);
-                bady.append("\n");
-                respons = bady;
-                return;
-            }
+                
+                if(url == location_and_url.second)
+                {
+
+                if(!location_and_url.first.getreturn().empty())
+                {
+                    std ::string bady;
+                    bady = "HTTP/1.1 301 Moved Permanently";
+                    bady.append("\nLocation: ");
+                    bady.append(location_and_url.first.getreturn()[1]);
+                    bady.append("\n");
+                    respons = bady;
+             
+                    return;
+                }
+                }
             if (autoindex == "off")
             {
                 if ((j = open(url2.c_str(), O_RDWR)) != -1)
@@ -339,7 +344,7 @@ Response::Response(Prasing_Request rq, Configuration conf_serv)
                             name1 = name;
                         else
                             name1 = url + "/" + name;
-                        if(name != ".")
+                        if (name != ".")
                             msg += "\n<li><a href=\"" + name1 + "\">" + name + "</a></li>\n";
                     }
                     msg += "</ol>\n\
