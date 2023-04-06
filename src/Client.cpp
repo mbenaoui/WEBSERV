@@ -2,7 +2,6 @@
 
 Client::Client()
 {
-
 }
 
 int Client::getConnecfd()
@@ -18,7 +17,6 @@ Client::~Client()
 {
     _content_Length = "";
     _readyToRecv = true;
-    // _config.~Configuration();
     _headrs = "";
     _reuqst = "";
     _body = "";
@@ -34,6 +32,18 @@ void Client::setResponse(Response respse)
 int &Client::getReadyToRecv()
 {
     return _readyToRecv;
+}
+void Client::setConfiguration(Configuration &conf)
+{
+    _config = conf;
+}
+pollfd &Client::getPlfd()
+{
+    return _plfd;
+}
+void Client::setPolfd(pollfd plfd)
+{
+    _plfd = plfd;
 }
 void Client::setReadyToRecv(int &value)
 {
@@ -107,7 +117,7 @@ int Client::find_content_length()
     if (_reuqst.find("Content-Length") == std::string::npos)
         return 0;
     int start = _reuqst.find("Content-Length") + strlen("Content-Length: ");
-    int i = start;
+    size_t i = start;
     while (i < _reuqst.size() - 1)
     {
         if (_reuqst[i] == '\r' && _reuqst[i + 1] == '\n')
@@ -125,14 +135,31 @@ int Client::find_Transfer_Encoding()
     if (_reuqst.find("Transfer-Encoding") == std::string::npos)
         return 0;
     int start = _reuqst.find("Transfer-Encoding") + strlen("Transfer-Encoding: ");
-    int i = start;
+    size_t i = start;
     while (i < _reuqst.size() - 1)
     {
         if (_reuqst[i] == '\r' && _reuqst[i + 1] == '\n')
         {
             _Transfer_Encoding = _reuqst.substr(start, i - start);
-            std::cout << _Transfer_Encoding;
-            // exit(1);
+            return 1;
+        }
+        i++;
+    }
+    return 0;
+}
+int Client::find_Host()
+{
+    if (_reuqst.find("Host") == std::string::npos)
+        return 0;
+    int start = _reuqst.find("Host") + strlen("Host: ");
+    size_t i = start;
+    while (i < _reuqst.size() - 1)
+    {
+        if (_reuqst[i] == '\r' && _reuqst[i + 1] == '\n')
+        {
+            _hostrqst = _reuqst.substr(start, i - start);
+            if (_hostrqst.find(":") != std::string::npos)
+                _hostrqst = _hostrqst.substr(0, _hostrqst.find(":"));
             return 1;
         }
         i++;
@@ -140,41 +167,18 @@ int Client::find_Transfer_Encoding()
     return 0;
 }
 
-std ::vector<std ::string> ft_split(std::string str, std::string delimiter)
-{
-    std ::vector<std ::string> v;
-    if (!str.empty())
-    {
-        int start = 0;
-        do
-        {
-            int idx = str.find(delimiter, start);
-            if (idx == std ::string::npos)
-                break;
-            int length = idx - start;
-            v.push_back(str.substr(start, length));
-            start += (length + delimiter.size());
-        } while (true);
-        v.push_back(str.substr(start));
-    }
-
-    return v;
-}
-
 int Client::find_request_eof()
 {
     std::string farstline;
-    if (_readyToRecv)
+  if (_readyToRecv)
     {
         if (find_content_length())
         {
             _readyToRecv = false;
             _cont_legth = atoi(_content_Length.c_str());
         }
-        if (find_Transfer_Encoding())
-        {
-
-        }
+        find_Transfer_Encoding();
+        find_Host();
     }
     if (_reuqst.find("\r\n\r\n") != std::string::npos && _headrs.empty())
     {
@@ -187,19 +191,9 @@ int Client::find_request_eof()
         if (_reuqst.size() == _cont_legth + _headrs.size())
             _eof = true;
     }
-    if(!_Transfer_Encoding.compare("chunked") && (_reuqst.find("\r\n0\r\n") != std::string::npos))
+    if (!_Transfer_Encoding.compare("chunked") && (_reuqst.find("\r\n0\r\n") != std::string::npos))
     {
-         _eof = true;
+        _eof = true;
     }
-    // std ::vector<std ::string> res = ft_split(_reuqst, "\r\n");
-    // for (int i = 0; i < res.size(); i++)
-    // {
-    //     std ::string key = res[i].substr(0, res[i].find(":"));
-    //     std ::string value = res[i].substr(res[i].find(" ") + 1);
-    //     mymap.insert(std ::pair<std ::string, std::string>(key, value));
-    // }
-    // if(mymap["Host"].find(":") != std::string::npos)
-    //     _hostrqst = mymap["Host"].substr(0,mymap["Host"].find(":"));
     return 0;
 }
-

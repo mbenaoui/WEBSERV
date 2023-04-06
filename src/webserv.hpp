@@ -28,33 +28,32 @@ class Webserv
 {
 private:
     static const int _true = true;
-    std::vector<pollfd> _pollfd;
-    std::vector<Configuration> _confgs;
-    std::map<int, Configuration> _servers;
-    std::vector<Client *> _clients;
+    std::map<int, Configuration>    _servers;
+    std::vector<Configuration>      _confgs;
+    std::vector<Client *>           _clients;
+    std::vector<pollfd>             _pollfd;
 
 public:
-    std::vector<pollfd> &get_Pollfd();
-    std::vector<Configuration> &get_Confgs();
-    std::map<int, Configuration> &get_Servers();
-    std::vector<Client*> &get_Clients();
-    //---->  memeber  fuction <---\\.
-    int setup_poollfd();
-    int init_server();
-    int run_server();
-    int ft_accept(pollfd &tmp_fd);
-    int ft_recv(pollfd &tmp_fd,int i,int j);
-    int ft_send(pollfd &tmp_fd, int i, int j);
-    int server_matching(int j);
-    static int server_run()
-    {
-        return true;
-    }
-    Webserv();
+    //---->      Getters & Setters     <---\\.
+    std::map<int, Configuration>    &getServers();
+    std::vector<Configuration>      &getConfgs();
+    std::vector<Client*>            &getClients();
+    std::vector<pollfd>             &getPollfd();
+
+    //---->       Memeber Fuction      <---\\.
+    int                             ft_send(pollfd &tmp_fd, int i, int j);
+    int                             ft_recv(pollfd &tmp_fd,int i, int j);
+    int                             ft_accept(pollfd &tmp_fd);
+    int                             server_matching(int j);
+    int                             setup_poollfd();
+    int                             init_server();
+    int                             run_server();
+
+    //---->  Construction & Destructor <---\\.
     Webserv(char *path);
     ~Webserv();
+    Webserv();
 };
 std::string cleaning_input(std::string str);
-int msg_error(int status);
 
 #endif
